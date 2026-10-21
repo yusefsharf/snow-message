@@ -1,0 +1,1272 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090909">
+<title>پیام‌رسان من</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  color-scheme: dark;
+  --bg: #090909;
+  --panel: #151515;
+  --panel2: #1d1d1d;
+  --border: #303030;
+  --text: #eeeeee;
+  --muted: #999999;
+  --accent: #69d6ff;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: Tahoma, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+button, input {
+  font: inherit;
+}
+
+button {
+  background: #292929;
+  color: var(--text);
+  border: 1px solid #414141;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+
+button:hover {
+  background: #383838;
+}
+
+button:active {
+  background: #454545;
+}
+
+button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+input {
+  width: 100%;
+  min-width: 0;
+  padding: 11px 12px;
+  border-radius: 10px;
+  border: 1px solid #363636;
+  outline: none;
+  background: #1b1b1b;
+  color: var(--text);
+}
+
+input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px #69d6ff22;
+}
+
+input::placeholder {
+  color: #858585;
+}
+
+#login {
+  margin: auto;
+  width: min(360px, 90%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 26px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+
+#login h2 {
+  margin: 0 0 8px;
+  text-align: center;
+}
+
+#login button {
+  width: 100%;
+}
+
+#err {
+  color: #ff8b8b;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+#app {
+  display: none;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  position: relative;
+}
+
+#side {
+  width: 230px;
+  flex-shrink: 0;
+  background: var(--panel);
+  overflow-y: auto;
+  border-left: 1px solid var(--border);
+  transition: width .2s;
+}
+
+#side div {
+  padding: 15px 12px;
+  border-bottom: 1px solid #252525;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+  transition: background .15s;
+}
+
+#side div:hover {
+  background: #222;
+}
+
+#side div.sel {
+  background: #303030;
+}
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #666;
+  margin-left: 8px;
+}
+
+.dot.on {
+  background: #a5d6a7;
+}
+
+#main {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+#top {
+  min-height: 62px;
+  padding: 10px 14px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+#who {
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#msgs {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #0b0b0b;
+}
+
+.m {
+  align-self: flex-end;
+  max-width: min(78%, 600px);
+  padding: 10px 13px;
+  border-radius: 14px 14px 4px 14px;
+  background: #242424;
+  border: 1px solid #343434;
+  overflow-wrap: anywhere;
+  line-height: 1.7;
+}
+
+.m.me {
+  align-self: flex-start;
+  background: #383838;
+  border-color: #494949;
+  border-radius: 14px 14px 14px 4px;
+}
+
+.m img {
+  display: block;
+  max-width: 100%;
+  max-height: 400px;
+  border-radius: 9px;
+  object-fit: contain;
+}
+
+.m audio {
+  display: block;
+  max-width: 100%;
+  width: 260px;
+}
+
+.m small {
+  display: block;
+  color: #aaa;
+  font-size: 10px;
+  margin-top: 4px;
+}
+
+#bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+}
+
+#bar input[type="text"] {
+  flex: 1;
+}
+
+#bar label {
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+#bar label:hover {
+  background: #292929;
+}
+
+#rec.recording {
+  background: #555;
+  border-color: #888;
+}
+
+#callbox {
+  display: none;
+  position: fixed;
+  z-index: 10;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  padding: 12px;
+  background: #242424;
+  border: 1px solid #555;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 5px 25px #0008;
+}
+
+#callbox button {
+  margin-right: 10px;
+  background: #444;
+}
+
+#app.contacts-hidden #side {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  #side {
+    width: 125px;
+  }
+
+  #side div {
+    padding: 13px 8px;
+    font-size: 12px;
+  }
+
+  #top {
+    padding: 8px;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  #top button {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  #who {
+    flex: 1;
+    text-align: center;
+    min-width: 50px;
+  }
+
+  #bar {
+    padding: 7px;
+    gap: 5px;
+  }
+
+  #bar button {
+    padding: 9px;
+  }
+
+  #bar label {
+    padding: 5px;
+  }
+
+  #bar input[type="text"] {
+    padding: 10px 8px;
+  }
+
+  #msgs {
+    padding: 10px;
+  }
+
+  .m {
+    max-width: 92%;
+  }
+
+  #login {
+    padding: 20px;
+  }
+}
+
+.m-actions { display:none!important; }
+.m { cursor:pointer; }
+.m audio,.m img { cursor:auto; }
+.contact-menu-btn { width:34px; min-width:34px; padding:6px 8px!important; color:var(--accent); font-size:20px; }
+.context-overlay { display:none; position:fixed; inset:0; z-index:60; background:#0009; align-items:center; justify-content:center; padding:18px; }
+.context-card { width:min(320px,100%); background:var(--panel); border:1px solid var(--border); border-radius:18px; padding:12px; box-shadow:0 18px 55px #000a; }
+.context-title { font-size:14px; color:var(--muted); padding:8px 10px 12px; overflow-wrap:anywhere; }
+.context-option { display:flex; width:100%; align-items:center; gap:12px; text-align:start; border:0; background:transparent!important; padding:13px 12px; border-radius:10px; }
+.context-option:hover { background:var(--panel2)!important; }
+.context-option.danger { color:#ff7777; }
+#selectionBar { display:none; align-items:center; gap:8px; padding:8px 12px; background:var(--panel); border-bottom:1px solid var(--border); }
+#selectionBar span { flex:1; }
+.m.selected { outline:2px solid #55bfff; }
+#editAvatarFile { display:block; width:100%; padding:8px; }
+
+.m-reply { border-right:3px solid #aaa; padding:5px 8px; margin-bottom:7px; color:#bbb; background:#171717; border-radius:5px; font-size:12px; }
+#replying { display:none; padding:7px 12px; background:#202020; color:#ddd; border-top:1px solid #333; font-size:12px; }
+#replying button { margin-right:8px; padding:3px 7px; }
+#profileOverlay {
+  display:none; position:fixed; inset:0; z-index:30;
+  background:#000a; align-items:center; justify-content:center; padding:18px;
+}
+#profileCard {
+  width:min(380px,100%); background:var(--panel); border:1px solid var(--border);
+  border-radius:18px; padding:22px; box-shadow:0 15px 50px #0009;
+}
+#profileAvatar {
+  width:82px;height:82px;border-radius:50%;object-fit:cover;background:#292929;
+  display:block;margin:0 auto 14px;border:1px solid #444;
+}
+#profileCard h3 { text-align:center; margin:8px 0; overflow-wrap:anywhere; }
+#profileUsername { text-align:center;color:var(--muted);direction:ltr; }
+#profileBio { white-space:pre-wrap; overflow-wrap:anywhere; margin:18px 0; line-height:1.8; }
+.profile-actions { display:flex;gap:8px; }
+.profile-actions button { flex:1; }
+.contact-row { display:flex; align-items:center; gap:6px; padding:8px!important; }
+.contact-name { flex:1; min-width:0; text-align:right; background:transparent; border:0; padding:7px 2px; overflow-wrap:anywhere; }
+.profile-small { padding:7px 9px!important; flex-shrink:0; }
+
+
+/* Settings and manually selected light theme */
+#settingsOverlay { display:none; position:fixed; inset:0; z-index:40; background:#000a; align-items:center; justify-content:center; padding:16px; }
+#settingsCard { width:min(440px,100%); max-height:92vh; overflow:auto; background:var(--panel); color:var(--text); border:1px solid var(--border); border-radius:18px; padding:20px; box-shadow:0 15px 50px #0009; }
+#settingsCard h2 { margin:0 0 18px; }
+.setting-field { display:flex; flex-direction:column; gap:7px; margin:13px 0; }
+.setting-field input, .setting-field textarea, .setting-field select { width:100%; padding:11px; border-radius:10px; border:1px solid var(--border); background:var(--panel2); color:var(--text); font:inherit; }
+.setting-field textarea { min-height:82px; resize:vertical; }
+.settings-actions { display:flex; gap:8px; margin-top:18px; }
+.settings-actions button { flex:1; }
+#settingsStatus { min-height:18px; font-size:12px; color:var(--muted); margin-top:8px; }
+body.light { --bg:#f3f5f8; --panel:#ffffff; --panel2:#f0f2f5; --border:#d5dbe3; --text:#202631; --muted:#626d7b; --accent:#356ac3; color-scheme:light; background:var(--bg); color:var(--text); }
+body.light button { background:#edf1f6; color:#202631; border-color:#cbd3de; }
+body.light button:hover { background:#e0e7f0; }
+body.light input, body.light .setting-field input, body.light .setting-field textarea, body.light .setting-field select { background:#fff; color:#202631; border-color:#cbd3de; }
+body.light #side, body.light #top, body.light #bar { background:#fff; border-color:#d5dbe3; }
+body.light #side div { border-color:#e5e8ed; }
+body.light #side div:hover, body.light #side div.sel { background:#e8eef8; }
+body.light #msgs { background:#f3f5f8; }
+body.light .m { background:#fff; border-color:#d5dbe3; color:#202631; }
+body.light .m.me { background:#e2ecff; border-color:#c1d5fb; }
+body.light .m small { color:#667080; }
+body.light #replying { background:#e8edf4; color:#202631; border-color:#d5dbe3; }
+body.light #profileCard, body.light #settingsCard { background:#fff; color:#202631; border-color:#d5dbe3; }
+body.light #profileUsername { color:#626d7b; }
+body.light #callbox { background:#fff; color:#202631; border-color:#d5dbe3; }
+body.light hr { border-color:#d5dbe3!important; }
+
+</style>
+</head>
+
+<body>
+
+<div id="callbox">
+  در حال تماس صوتی…
+  <button onclick="hangup(true)">قطع تماس</button>
+</div>
+
+<div id="login">
+  <h2>پیام‌رسان</h2>
+  <input id="u" placeholder="نام کاربری (انگلیسی)"
+         autocapitalize="none" autocomplete="username">
+  <input id="p" type="password" placeholder="رمز عبور"
+         autocomplete="current-password">
+  <input id="c" placeholder="کد دعوت (برای ثبت‌نام)">
+  <button onclick="auth('login')">ورود</button>
+  <button onclick="auth('register')">ثبت‌نام</button>
+  <div id="err"></div>
+</div>
+
+<div id="app">
+  
+<div id="side">
+  <div style="padding:12px">
+    <input
+      id="userSearch"
+      type="text"
+      placeholder="جست‌وجوی نام کاربری..."
+      autocomplete="off"
+      style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;border:1px solid #333;background:#090909;color:#eee"
+    >
+    <div id="searchResults"></div>
+    <hr style="border-color:#252525">
+    <div style="padding:8px">مخاطب‌ها</div>
+    <div id="contactList"></div>
+  </div>
+</div>
+
+
+  <div id="main">
+    <div id="top">
+      <button onclick="toggleContacts()">☰ مخاطب‌ها</button>
+      <span id="who">یک نفر را انتخاب کن</span>
+      <div style="display:flex;gap:6px;align-items:center"><button id="settingsButton" onclick="openSettings()">⚙️ تنظیمات</button><button id="callButton" onclick="startCall()">📞 تماس</button></div>
+    </div>
+
+    <div id="selectionBar"><span id="selectedCount">۰ پیام انتخاب شده</span><button type="button" onclick="deleteSelected()">حذف انتخاب‌شده‌ها</button><button type="button" onclick="exitSelection()">لغو</button></div>
+    <div id="msgs"></div>
+    <div id="replying"></div>
+
+    <div id="bar">
+      <button id="rec" onclick="toggleRec()">🎤</button>
+
+      <label title="ارسال تصویر">
+        🖼️
+        <input type="file" accept="image/*" hidden
+               onchange="sendImage(this)">
+      </label>
+
+      <input type="text" id="t" placeholder="پیام بنویس…"
+             onkeydown="if(event.key==='Enter')sendText()">
+
+      <button onclick="sendText()">➤</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="profileOverlay" onclick="if(event.target===this)closeProfile()">
+  <section id="profileCard" role="dialog" aria-modal="true" aria-labelledby="profileName">
+    <img id="profileAvatar" alt="تصویر پروفایل" hidden>
+    <h3 id="profileName">پروفایل</h3>
+    <div id="profileUsername"></div>
+    <div id="profileBio">بیوگرافی ثبت نشده است.</div>
+    <div class="profile-actions">
+      <button id="profileMessage" type="button">ارسال پیام</button>
+      <button type="button" onclick="closeProfile()">بستن</button>
+    </div>
+  </section>
+</div>
+
+
+<div id="settingsOverlay" onclick="if(event.target===this)closeSettings()">
+  <section id="settingsCard" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <h2 id="settingsTitle">تنظیمات</h2>
+    <div class="setting-field"><label id="themeLabel" for="themeSelect">حالت نمایش</label>
+      <select id="themeSelect" onchange="applyTheme(this.value)"><option value="dark">شب (تیره)</option><option value="light">روز (روشن)</option></select>
+    </div>
+    <div class="setting-field"><label id="languageLabel" for="languageSelect">زبان برنامه</label>
+      <select id="languageSelect" onchange="applyLanguage(this.value)"><option value="fa">فارسی</option><option value="en">English</option></select>
+    </div>
+    <hr style="border-color:#303030">
+    <h3 id="editProfileTitle">ویرایش پروفایل</h3>
+    <div class="setting-field"><label id="displayNameLabel" for="editDisplayName">نام نمایشی</label><input id="editDisplayName" maxlength="40" placeholder="نامی که دیگران می‌بینند"></div>
+    <div class="setting-field"><label id="bioLabel" for="editBio">بیوگرافی</label><textarea id="editBio" maxlength="240" placeholder="کمی درباره خودت بنویس"></textarea></div>
+    <div class="setting-field"><label id="avatarLabel" for="editAvatarFile">عکس پروفایل از دستگاه</label><input id="editAvatarFile" type="file" accept="image/*"><input id="editAvatar" type="hidden" maxlength="500"></div>
+    <div id="settingsStatus" role="status"></div>
+    <div class="settings-actions"><button id="saveProfileButton" type="button" onclick="saveMyProfile()">ذخیره تغییرات</button><button id="closeSettingsButton" type="button" onclick="closeSettings()">بستن</button></div>
+  </section>
+</div>
+
+<div id="messageMenu" class="context-overlay" onclick="if(event.target===this)closeMessageMenu()"><section class="context-card" role="dialog" aria-modal="true"><div id="messageMenuTitle" class="context-title">عملیات پیام</div><button class="context-option" onclick="messageAction('reply')">↩️ <span>پاسخ</span></button><button class="context-option" id="messageEditOption" onclick="messageAction('edit')">✏️ <span>ویرایش</span></button><button class="context-option" onclick="messageAction('select')">☑️ <span>انتخاب</span></button><button class="context-option danger" onclick="messageAction('delete')">🗑️ <span>حذف</span></button><button class="context-option" onclick="closeMessageMenu()">✕ <span>بستن</span></button></section></div>
+<div id="contactMenu" class="context-overlay" onclick="if(event.target===this)closeContactMenu()"><section class="context-card" role="dialog" aria-modal="true"><div id="contactMenuTitle" class="context-title">مخاطب</div><button class="context-option" onclick="contactAction('profile')">👤 <span>مشاهده پروفایل</span></button><button class="context-option" onclick="contactAction('message')">💬 <span>ارسال پیام</span></button><button class="context-option danger" onclick="contactAction('remove')">🗑️ <span>حذف مخاطب</span></button><button class="context-option" onclick="closeContactMenu()">✕ <span>بستن</span></button></section></div>
+<audio id="aud" autoplay></audio>
+
+<script>
+let token = localStorage.token;
+let me = localStorage.me;
+let ws, cur = null, users = [], contacts = [], replyTarget = null;
+let reconnectTimer = null;
+let menuMessage = null, menuContact = null, selectingMessages = false;
+const selectedMessages = new Set();
+
+const $ = id => document.getElementById(id);
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;'
+}[c]));
+
+
+const words = {
+ fa: {contacts:'☰ مخاطب‌ها', choose:'یک نفر را انتخاب کن', call:'📞 تماس', settings:'⚙️ تنظیمات', search:'جست‌وجوی نام کاربری...', contactsTitle:'مخاطب‌ها', add:'افزودن', noUsers:'کاربری پیدا نشد.', profile:'پروفایل', noBio:'بیوگرافی ثبت نشده است.', message:'ارسال پیام', close:'بستن', settingsTitle:'تنظیمات', theme:'حالت نمایش', dark:'شب (تیره)', light:'روز (روشن)', language:'زبان برنامه', editProfile:'ویرایش پروفایل', displayName:'نام نمایشی', displayPlaceholder:'نامی که دیگران می‌بینند', bio:'بیوگرافی', bioPlaceholder:'کمی درباره خودت بنویس', avatar:'عکس پروفایل از دستگاه', save:'ذخیره تغییرات', msgPlaceholder:'پیام بنویس…', saveOk:'پروفایل ذخیره شد.', saveFail:'ذخیره پروفایل ناموفق بود.', reply:'پاسخ به', edited:'ویرایش‌شده', edit:'ویرایش', delete:'حذف', cancel:'لغو', removeContact:'حذف مخاطب', sentImage:'تصویر', voice:'پیام صوتی'},
+ en: {contacts:'☰ Contacts', choose:'Select a contact', call:'📞 Call', settings:'⚙️ Settings', search:'Search username...', contactsTitle:'Contacts', add:'Add', noUsers:'No users found.', profile:'Profile', noBio:'No bio yet.', message:'Message', close:'Close', settingsTitle:'Settings', theme:'Appearance', dark:'Dark mode', light:'Light mode', language:'Language', editProfile:'Edit profile', displayName:'Display name', displayPlaceholder:'Name others will see', bio:'Bio', bioPlaceholder:'Tell others about yourself', avatar:'Choose profile photo', save:'Save changes', msgPlaceholder:'Write a message…', saveOk:'Profile saved.', saveFail:'Could not save profile.', reply:'Reply to', edited:'Edited', edit:'Edit', delete:'Delete', cancel:'Cancel', removeContact:'Remove contact', sentImage:'Image', voice:'Voice message'}
+};
+function tr(k) { return (words[localStorage.chatLanguage || 'fa'] || words.fa)[k] || words.fa[k] || k; }
+function applyTheme(value) {
+  const theme = value === 'light' ? 'light' : 'dark';
+  document.body.classList.toggle('light', theme === 'light');
+  localStorage.chatTheme = theme;
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.content = theme === 'light' ? '#f3f5f8' : '#090909';
+  const select = $('themeSelect'); if (select) select.value = theme;
+}
+function applyLanguage(value) {
+  const lang = value === 'en' ? 'en' : 'fa';
+  localStorage.chatLanguage = lang;
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'fa' ? 'rtl' : 'ltr';
+  const set = (id, key) => { const el = $(id); if (el) el.textContent = tr(key); };
+  set('settingsButton','settings'); set('callButton','call'); set('settingsTitle','settingsTitle');
+  set('themeLabel','theme'); set('languageLabel','language'); set('editProfileTitle','editProfile');
+  set('displayNameLabel','displayName'); set('bioLabel','bio'); set('avatarLabel','avatar');
+  set('saveProfileButton','save'); set('closeSettingsButton','close');
+  $('themeSelect').options[0].text = tr('dark'); $('themeSelect').options[1].text = tr('light');
+  $('languageSelect').options[0].text = 'فارسی'; $('languageSelect').options[1].text = 'English'; $('languageSelect').value = lang;
+  $('editDisplayName').placeholder = tr('displayPlaceholder'); $('editBio').placeholder = tr('bioPlaceholder');  $('t').placeholder = tr('msgPlaceholder');
+  const topButtons = $('top').querySelectorAll('button'); if (topButtons[0]) topButtons[0].textContent = tr('contacts');
+  if (!cur) $('who').textContent = tr('choose');
+  const search = $('userSearch'); if (search) search.placeholder = tr('search');
+  const sideLabels = $('side').querySelectorAll('div[style*="padding:8px"]'); if (sideLabels[0]) sideLabels[0].textContent = tr('contactsTitle');
+  drawUsers();
+}
+async function openSettings() {
+  $('settingsStatus').textContent = '';
+  $('themeSelect').value = localStorage.chatTheme || 'dark';
+  $('languageSelect').value = localStorage.chatLanguage || 'fa';
+  try {
+    const r = await fetch('/api/profile/' + encodeURIComponent(me), {headers:{'x-token':token}});
+    if (!r.ok) throw new Error('profile');
+    const profile = await r.json();
+    $('editDisplayName').value = profile.displayName === me ? '' : (profile.displayName || '');
+    $('editBio').value = profile.bio || '';
+    $('editAvatar').value = profile.avatar || '';
+  } catch { $('settingsStatus').textContent = tr('saveFail'); }
+  $('settingsOverlay').style.display = 'flex';
+}
+function closeSettings() { $('settingsOverlay').style.display = 'none'; }
+$('editAvatarFile').addEventListener('change', async function() {
+  const file = this.files && this.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { alert('فقط فایل تصویری انتخاب کن.'); this.value=''; return; }
+  try {
+    const uploaded = await upload(file, (file.name.split('.').pop() || 'jpg').toLowerCase());
+    $('editAvatar').value = uploaded;
+    $('settingsStatus').textContent = 'عکس انتخاب و بارگذاری شد؛ برای ثبت نهایی ذخیره تغییرات را بزن.';
+  } catch (e) { $('settingsStatus').textContent = e.message || 'بارگذاری عکس ناموفق بود.'; }
+});
+
+async function saveMyProfile() {
+  $('settingsStatus').textContent = '';
+  try {
+    const r = await fetch('/api/profile', {method:'POST', headers:{'Content-Type':'application/json','x-token':token}, body:JSON.stringify({displayName:$('editDisplayName').value, bio:$('editBio').value, avatar:$('editAvatar').value})});
+    const data = await r.json().catch(()=>({}));
+    if (!r.ok) throw new Error(data.error || tr('saveFail'));
+    $('settingsStatus').textContent = tr('saveOk');
+  } catch(e) { $('settingsStatus').textContent = e.message || tr('saveFail'); }
+}
+applyTheme(localStorage.chatTheme || 'dark');
+
+async function auth(mode) {
+  $('err').textContent = '';
+
+  try {
+    const r = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        mode,
+        username: $('u').value.trim(),
+        password: $('p').value,
+        code: $('c').value.trim()
+      })
+    });
+
+    const j = await r.json();
+
+    if (!r.ok) {
+      $('err').textContent = j.error || 'ورود ناموفق بود';
+      return;
+    }
+
+    token = j.token;
+    me = j.username;
+
+    localStorage.token = token;
+    localStorage.me = me;
+
+    start();
+  } catch (e) {
+    $('err').textContent = 'ارتباط با سرور برقرار نشد';
+  }
+}
+
+function start() {
+  if (!token || !me) return;
+  applyTheme(localStorage.chatTheme || 'dark');
+  applyLanguage(localStorage.chatLanguage || 'fa');
+
+  if (ws && (
+    ws.readyState === WebSocket.OPEN ||
+    ws.readyState === WebSocket.CONNECTING
+  )) return;
+
+  clearTimeout(reconnectTimer);
+
+  $('login').style.display = 'none';
+  $('app').style.display = 'flex';
+
+  const protocol = location.protocol === 'https:' ? 'wss://' : 'ws://';
+
+  ws = new WebSocket(
+    protocol + location.host + '/?token=' + encodeURIComponent(token)
+  );
+
+ ws.onopen = () => {
+  console.log('WebSocket connected');
+  loadContacts();
+  };
+
+  ws.onclose = () => {
+    if (token) {
+      reconnectTimer = setTimeout(start, 2500);
+    }
+  };
+
+  ws.onerror = () => {
+    console.log('WebSocket connection error');
+  };
+
+  ws.onmessage = e => {
+    let m;
+
+    try {
+      m = JSON.parse(e.data);
+    } catch {
+      return;
+    }
+
+    if (m.t === 'users') {
+      users = m.list.filter(u => u.name !== me);
+      drawUsers();
+    }
+
+    else if (m.t === 'history' && m.with === cur) {
+      $('msgs').innerHTML = '';
+      m.list.forEach(addMsg);
+    }
+
+    else if (m.t === 'msg') {
+      if (m.m.from === cur || m.m.to === cur) {
+        addMsg(m.m);
+      }
+    }
+
+    else if (m.t === 'msg-update') {
+      const old = [...document.querySelectorAll('[data-mid]')].find(el => el.dataset.mid === m.m.id);
+      if (old) old.remove();
+      if (m.m.from === cur || m.m.to === cur) addMsg(m.m);
+    }
+    else if (m.t === 'msg-delete') {
+      const old = [...document.querySelectorAll('[data-mid]')].find(el => el.dataset.mid === m.id);
+      if (old) old.remove();
+    }
+    else if (m.t === 'error') {
+      alert(m.error || 'خطایی رخ داد.');
+    }
+    else if (m.t === 'signal') {
+      onSignal(m.from, m.data);
+    }
+  };
+}
+
+if (token && me) {
+  start();
+}
+
+
+async function loadContacts() {
+  try {
+    const r = await fetch('/api/contacts', {
+      headers: { 'x-token': token }
+    });
+
+    if (!r.ok) return;
+
+    contacts = await r.json();
+    drawUsers();
+  } catch (e) {
+    console.error('Loading contacts failed:', e);
+  }
+}
+
+function drawUsers() {
+  const side = $('side');
+
+  side.innerHTML = `
+    <div style="padding:12px">
+      <input id="userSearch" type="text"
+        placeholder="${esc(tr('search'))}"
+        autocomplete="off"
+        style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;border:1px solid #333;background:#090909;color:#eee">
+      <div id="searchResults"></div>
+      <hr style="border-color:#252525">
+      <div style="padding:8px">${esc(tr('contactsTitle'))}</div>
+      <div id="contactList"></div>
+    </div>
+  `;
+
+  const list = $('contactList');
+  list.innerHTML = contacts.map(name => {
+    const u = users.find(u => u.name === name);
+    return `
+      <div class="contact-row ${name === cur ? 'sel' : ''}">
+        <span class="dot ${u && u.online ? 'on' : ''}"></span>
+        <button type="button" class="contact-name" data-user="${esc(name)}">${esc(name)}</button>
+        <button type="button" class="profile-small contact-menu-btn" data-contact-menu="${esc(name)}" title="گزینه‌های مخاطب" aria-label="گزینه‌های مخاطب">⋮</button>
+      </div>
+    `;
+  }).join('');
+
+  list.querySelectorAll('[data-user]').forEach(el => {
+    el.onclick = () => pick(el.dataset.user);
+  });
+  list.querySelectorAll('[data-contact-menu]').forEach(el => {
+    el.onclick = () => openContactMenu(el.dataset.contactMenu);
+  });
+
+  const search = $('userSearch');
+  search.oninput = async () => {
+    const q = search.value.trim();
+    const results = $('searchResults');
+
+    if (q.length < 2) {
+      results.innerHTML = '';
+      return;
+    }
+
+    try {
+      const r = await fetch(
+        '/api/users/search?q=' + encodeURIComponent(q),
+        { headers: { 'x-token': token } }
+      );
+
+      if (!r.ok) {
+        results.textContent = 'جست‌وجو ناموفق بود.';
+        return;
+      }
+
+      const found = await r.json();
+
+      results.innerHTML = found.map(u => `
+        <div style="padding:10px;display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <span>${esc(u.username)}</span>
+          <button type="button" data-add="${esc(u.username)}">
+            ${esc(tr('add'))}
+          </button>
+        </div>
+      `).join('') || `<div style="padding:10px">${esc(tr('noUsers'))}</div>`;
+
+      results.querySelectorAll('[data-add]').forEach(btn => {
+        btn.onclick = async () => {
+          const username = btn.dataset.add;
+
+          try {
+            const response = await fetch('/api/contacts', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'x-token': token
+              },
+              body: JSON.stringify({ username })
+            });
+
+            if (!response.ok) {
+              alert('افزودن مخاطب ناموفق بود.');
+              return;
+            }
+
+            if (!contacts.includes(username)) {
+              contacts.push(username);
+            }
+
+            drawUsers();
+          } catch (e) {
+            alert('ارتباط با سرور برقرار نشد.');
+          }
+        };
+      });
+    } catch (e) {
+      results.textContent = 'ارتباط با سرور برقرار نشد.';
+    }
+  };
+}
+
+async function showProfile(username) {
+  try {
+    const r = await fetch('/api/profile/' + encodeURIComponent(username), {
+      headers: { 'x-token': token }
+    });
+    if (!r.ok) {
+      alert('بارگذاری پروفایل ناموفق بود.');
+      return;
+    }
+    const profile = await r.json();
+    $('profileName').textContent = profile.displayName || profile.username;
+    $('profileUsername').textContent = '@' + profile.username;
+    $('profileBio').textContent = profile.bio || tr('noBio');
+    const avatar = $('profileAvatar');
+    if (profile.avatar) {
+      avatar.src = profile.avatar.startsWith('http') || profile.avatar.startsWith('data:') ? profile.avatar : '/api/avatar/' + encodeURIComponent(profile.username) + '?token=' + encodeURIComponent(token) + '&v=' + Date.now();
+      avatar.hidden = false;
+      avatar.onerror = () => { avatar.hidden = true; };
+    } else {
+      avatar.removeAttribute('src');
+      avatar.hidden = true;
+    }
+    $('profileMessage').textContent = tr('message');
+    $('profileName').setAttribute('dir', localStorage.chatLanguage === 'en' ? 'ltr' : 'auto');
+    $('profileMessage').onclick = () => {
+      closeProfile();
+      pick(profile.username);
+    };
+    $('profileOverlay').style.display = 'flex';
+  } catch (e) {
+    alert('ارتباط با سرور برقرار نشد.');
+  }
+}
+
+function closeProfile() {
+  $('profileOverlay').style.display = 'none';
+}
+
+function pick(n) {
+  exitSelection();
+  cur = n;
+  $('who').textContent = n;
+  $('msgs').innerHTML = '';
+  drawUsers();
+
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ t: 'history', with: n }));
+  }
+}
+
+function addMsg(m) {
+  const d = document.createElement('div');
+  d.className = 'm' + (m.from === me ? ' me' : '');
+  d.dataset.mid = m.id || '';
+
+  if (m.replyTo) {
+    const original = [...document.querySelectorAll('[data-mid]')].find(el => el.dataset.mid === m.replyTo);
+    const quote = document.createElement('div');
+    quote.className = 'm-reply';
+    quote.textContent = original ? 'پاسخ به: ' + original.innerText.slice(0, 100) : 'پاسخ به پیام قبلی';
+    d.appendChild(quote);
+  }
+
+  const src = m.file ? '/files/' + encodeURIComponent(m.file) + '?token=' + encodeURIComponent(token) : '';
+  if (m.type === 'image') {
+    const img = document.createElement('img');
+    img.src = src; img.alt = 'تصویر ارسال‌شده'; img.loading = 'lazy';
+    d.appendChild(img);
+  } else if (m.type === 'voice') {
+    const audio = document.createElement('audio');
+    audio.controls = true; audio.preload = 'metadata'; audio.src = src;
+    d.appendChild(audio);
+  } else {
+    const text = document.createElement('div');
+    text.textContent = m.text || '';
+    d.appendChild(text);
+    if (m.edited) {
+      const edited = document.createElement('small');
+      edited.textContent = 'ویرایش‌شده';
+      d.appendChild(edited);
+    }
+  }
+
+  const time = document.createElement('small');
+  time.textContent = new Date(m.ts).toLocaleTimeString('fa-IR');
+  d.appendChild(time);
+
+  d.addEventListener('click', event => {
+    if (event.target.closest('audio,button,a,input,video')) return;
+    if (selectingMessages) {
+      toggleMessageSelection(m.id, d);
+      return;
+    }
+    openMessageMenu(m);
+  });
+  d.addEventListener('contextmenu', event => {
+    event.preventDefault();
+    if (selectingMessages) toggleMessageSelection(m.id, d);
+    else openMessageMenu(m);
+  });
+  $('msgs').appendChild(d);
+  $('msgs').scrollTop = $('msgs').scrollHeight;
+}
+
+function openMessageMenu(m) {
+  menuMessage = m;
+  $('messageMenuTitle').textContent = (m.type === 'text' ? (m.text || 'پیام') : m.type === 'image' ? 'تصویر' : 'پیام صوتی').slice(0,90);
+  $('messageEditOption').style.display = m.from === me && m.type === 'text' ? 'flex' : 'none';
+  $('messageMenu').style.display = 'flex';
+}
+function closeMessageMenu() { $('messageMenu').style.display = 'none'; menuMessage = null; }
+function messageAction(action) {
+  const m = menuMessage;
+  if (!m) return;
+  closeMessageMenu();
+  if (action === 'reply') {
+    replyTarget = m.id;
+    $('replying').style.display = 'block';
+    $('replying').textContent = 'پاسخ به: ' + (m.type === 'text' ? (m.text || '') : m.type === 'image' ? 'تصویر' : 'پیام صوتی').slice(0,100);
+    const cancel = document.createElement('button'); cancel.textContent = 'لغو'; cancel.onclick = clearReply; $('replying').appendChild(cancel); $('t').focus();
+  } else if (action === 'edit' && m.from === me && m.type === 'text') {
+    const value = prompt('متن جدید پیام:', m.text || '');
+    if (value !== null && value.trim() && ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({t:'edit',id:m.id,text:value.trim()}));
+  } else if (action === 'select') {
+    selectingMessages = true; $('selectionBar').style.display = 'flex'; toggleMessageSelection(m.id, document.querySelector('[data-mid="' + CSS.escape(m.id) + '"]')); updateSelectedCount();
+  } else if (action === 'delete') {
+    const choice = m.from === me ? prompt('حذف فقط برای خودت: 1\nحذف برای هر دو نفر: 2', '1') : '1';
+    if (choice === '1' || choice === '2') if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({t:'delete',id:m.id,scope:choice === '2' ? 'both' : 'self'}));
+  }
+}
+function toggleMessageSelection(id, el) {
+  if (!id) return;
+  if (selectedMessages.has(id)) { selectedMessages.delete(id); if(el) el.classList.remove('selected'); }
+  else { selectedMessages.add(id); if(el) el.classList.add('selected'); }
+  updateSelectedCount();
+}
+function updateSelectedCount() { $('selectedCount').textContent = selectedMessages.size + ' پیام انتخاب شده'; }
+function exitSelection() { selectingMessages=false; selectedMessages.clear(); $('selectionBar').style.display='none'; document.querySelectorAll('.m.selected').forEach(el=>el.classList.remove('selected')); }
+async function deleteSelected() {
+  if (!selectedMessages.size) return;
+  if (!confirm('پیام‌های انتخاب‌شده فقط برای خودت حذف شوند؟')) return;
+  if (!ws || ws.readyState !== WebSocket.OPEN) { alert('اتصال به سرور برقرار نیست.'); return; }
+  [...selectedMessages].forEach(id => ws.send(JSON.stringify({t:'delete',id,scope:'self'})));
+  exitSelection();
+}
+function openContactMenu(name) { menuContact=name; $('contactMenuTitle').textContent='@'+name; $('contactMenu').style.display='flex'; }
+function closeContactMenu() { $('contactMenu').style.display='none'; menuContact=null; }
+async function contactAction(action) {
+  const name=menuContact; if(!name) return; closeContactMenu();
+  if(action==='profile') return showProfile(name);
+  if(action==='message') return pick(name);
+  if(action==='remove') {
+    if(!confirm('مخاطب «'+name+'» از فهرستت حذف شود؟ پیام‌های قبلی حذف نمی‌شوند.')) return;
+    try { const r=await fetch('/api/contacts/'+encodeURIComponent(name),{method:'DELETE',headers:{'x-token':token}}); if(!r.ok) throw new Error(); contacts=contacts.filter(n=>n!==name); if(cur===name){cur=null;$('who').textContent=tr('choose');$('msgs').innerHTML='';clearReply();} drawUsers(); }
+    catch { alert('حذف مخاطب ناموفق بود.'); }
+  }
+}
+
+function clearReply() {
+  replyTarget = null;
+  $('replying').style.display = 'none';
+  $('replying').textContent = '';
+}
+
+function sendMsg(o) {
+  if (!cur) {
+    alert('اول یک مخاطب انتخاب کن');
+    return false;
+  }
+
+  if (!ws || ws.readyState !== WebSocket.OPEN) {
+    alert('اتصال به سرور برقرار نیست');
+    return false;
+  }
+
+  ws.send(JSON.stringify({ t: 'msg', to: cur, ...o }));
+  return true;
+}
+
+function sendText() {
+  const v = $('t').value.trim();
+  if (!v) return;
+
+  if (sendMsg({ type: 'text', text: v, replyTo: replyTarget || '' })) {
+    $('t').value = '';
+    clearReply();
+  }
+}
+
+async function upload(blob, ext) {
+  const r = await fetch('/api/upload', {
+    method: 'POST',
+    headers: {
+      'x-token': token,
+      'x-ext': ext,
+      'Content-Type': 'application/octet-stream'
+    },
+    body: blob
+  });
+
+  const j = await r.json();
+
+  if (!r.ok || !j.file) {
+    throw new Error(j.error || 'آپلود فایل ناموفق بود');
+  }
+
+  return j.file;
+}
+
+async function sendImage(inp) {
+  const f = inp.files[0];
+  if (!f) return;
+
+  try {
+    const file = await upload(f, f.name.split('.').pop() || 'jpg');
+    sendMsg({ type: 'image', file });
+  } catch (e) {
+    alert(e.message || 'ارسال تصویر ناموفق بود');
+  }
+
+  inp.value = '';
+}
+
+let mr, chunks = [];
+
+async function toggleRec() {
+  if (mr && mr.state === 'recording') {
+    mr.stop();
+    return;
+  }
+
+  if (!navigator.mediaDevices?.getUserMedia ||
+      !window.MediaRecorder) {
+    alert('ضبط صدا در این مرورگر پشتیبانی نمی‌شود');
+    return;
+  }
+
+  try {
+    const s = await navigator.mediaDevices.getUserMedia({
+      audio: true
+    });
+
+    mr = new MediaRecorder(s);
+    chunks = [];
+
+    mr.ondataavailable = e => {
+      if (e.data.size) chunks.push(e.data);
+    };
+
+    mr.onstop = async () => {
+      s.getTracks().forEach(t => t.stop());
+      $('rec').textContent = '🎤';
+      $('rec').classList.remove('recording');
+
+      try {
+        const b = new Blob(chunks, { type: mr.mimeType });
+        const ext = mr.mimeType.includes('mp4') ? 'm4a' : 'webm';
+        const file = await upload(b, ext);
+
+        sendMsg({ type: 'voice', file });
+      } catch (e) {
+        alert(e.message || 'ارسال صدا ناموفق بود');
+      }
+    };
+
+    mr.start();
+    $('rec').textContent = '⏹';
+    $('rec').classList.add('recording');
+
+  } catch {
+    alert('دسترسی میکروفون ممکن نیست. HTTPS یا localhost لازم است.');
+  }
+}
+
+// تماس صوتی WebRTC
+let pc, peer, stream, pend = [];
+
+const sig = data => {
+  if (!ws || ws.readyState !== WebSocket.OPEN || !peer) return;
+
+  ws.send(JSON.stringify({
+    t: 'signal',
+    to: peer,
+    data
+  }));
+};
+
+async function setup() {
+  stream = await navigator.mediaDevices.getUserMedia({
+    audio: true
+  });
+
+  // برای ارتباط بین شبکه‌های مختلف ممکن است سرور STUN/TURN لازم باشد.
+  pc = new RTCPeerConnection({ iceServers: [] });
+
+  stream.getTracks().forEach(t => pc.addTrack(t, stream));
+
+  pc.ontrack = e => {
+    $('aud').srcObject = e.streams[0];
+    $('aud').play().catch(() => {});
+  };
+
+  pc.onicecandidate = e => {
+    if (e.candidate) sig({ cand: e.candidate });
+  };
+
+  pc.onconnectionstatechange = () => {
+    if (pc && ['failed', 'disconnected', 'closed'].includes(
+      pc.connectionState
+    )) {
+      hangup(false);
+    }
+  };
+
+  $('callbox').style.display = 'block';
+}
+
+async function startCall() {
+  if (!cur) {
+    alert('اول یک مخاطب انتخاب کن');
+    return;
+  }
+
+  if (pc) return;
+
+  peer = cur;
+
+  try {
+    await setup();
+
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+
+    sig({ offer });
+  } catch (e) {
+    hangup(false);
+    alert('شروع تماس ناموفق بود. دسترسی میکروفون و HTTPS را بررسی کن.');
+  }
+}
+
+async function flush() {
+  for (const c of pend) {
+    await pc.addIceCandidate(c);
+  }
+
+  pend = [];
+}
+
+async function onSignal(from, d) {
+  try {
+    if (d.offer) {
+      if (pc) {
+        ws.send(JSON.stringify({
+          t: 'signal',
+          to: from,
+          data: { bye: 1 }
+        }));
+        return;
+      }
+
+      if (!confirm('تماس صوتی از ' + from + '؛ پاسخ می‌دهی؟')) {
+        ws.send(JSON.stringify({
+          t: 'signal',
+          to: from,
+          data: { bye: 1 }
+        }));
+        return;
+      }
+
+      peer = from;
+      await setup();
+
+      await pc.setRemoteDescription(d.offer);
+      await flush();
+
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+
+      sig({ answer });
+    }
+
+    else if (d.answer && pc) {
+      await pc.setRemoteDescription(d.answer);
+      await flush();
+    }
+
+    else if (d.cand) {
+      if (pc && pc.remoteDescription) {
+        await pc.addIceCandidate(d.cand);
+      } else {
+        pend.push(d.cand);
+      }
+    }
+
+    else if (d.bye) {
+      hangup(false);
+    }
+  } catch (e) {
+    console.error('Call signaling error:', e);
+    hangup(false);
+  }
+}
+
+function hangup(notify) {
+  if (notify && peer) {
+    sig({ bye: 1 });
+  }
+
+  if (pc) {
+    pc.close();
+    pc = null;
+  }
+
+  if (stream) {
+    stream.getTracks().forEach(t => t.stop());
+    stream = null;
+  }
+
+  $('aud').srcObject = null;
+  pend = [];
+  peer = null;
+  $('callbox').style.display = 'none';
+}
+
+function toggleContacts() {
+  $('app').classList.toggle('contacts-hidden');
+}
+</script>
+</body>
+</html>
